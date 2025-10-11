@@ -42,19 +42,23 @@ cd SupportBotAI
 npm install
 ```
 
-### 3. Configure environment variables
+### 3. Setup FAQ Corpus
+
+Create a JSON file with all the FAQ dataset and customer queries at `server/faqs.json`
+
+### 4. Configure environment variables
 Create a `.env` file:
 ```env
 DATABASE_URL=your_neondb_connection_string
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-### 4. Initialize database
+### 5. Initialize database
 ```bash
 npm run db:push
 ```
 
-### 5. Start the development server
+### 6. Start the development server
 ```bash
 npm run dev
 ```
