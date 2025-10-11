@@ -1,0 +1,74 @@
+{
+  "faqs": [
+    {
+      "id": "faq-001",
+      "question": "How do I reset my password?",
+      "answer": "You can reset your password by clicking the 'Forgot Password' link on the login page. Enter your email address, and we'll send you instructions to create a new password. The reset link will be valid for 24 hours.",
+      "category": "Account Management",
+      "keywords": ["password", "reset", "forgot", "login", "access"]
+    },
+    {
+      "id": "faq-002",
+      "question": "What are your business hours?",
+      "answer": "Our customer support team is available Monday through Friday, 9:00 AM to 6:00 PM EST. We're closed on weekends and major holidays. For urgent matters outside business hours, you can submit a support ticket, and we'll respond on the next business day.",
+      "category": "General Information",
+      "keywords": ["hours", "time", "available", "open", "closed", "schedule"]
+    },
+    {
+      "id": "faq-003",
+      "question": "How can I track my order?",
+      "answer": "To track your order, log into your account and navigate to the 'Orders' section. Click on your order number to view detailed tracking information. You'll also receive email updates with tracking links when your order ships.",
+      "category": "Orders & Shipping",
+      "keywords": ["track", "order", "shipping", "delivery", "status", "where"]
+    },
+    {
+      "id": "faq-004",
+      "question": "Do you offer refunds?",
+      "answer": "Yes, we offer a 30-day money-back guarantee on most products. To request a refund, contact our billing team with your order number. Refunds are processed within 5-7 business days. Some restrictions may apply for digital products and custom items.",
+      "category": "Billing & Payments",
+      "keywords": ["refund", "return", "money back", "cancel", "billing"]
+    },
+    {
+      "id": "faq-005",
+      "question": "How do I update my account information?",
+      "answer": "Log into your account and click on 'Account Settings' or 'Profile'. From there, you can update your email address, phone number, shipping address, and other personal information. Don't forget to save your changes.",
+      "category": "Account Management",
+      "keywords": ["update", "change", "account", "profile", "information", "email", "address"]
+    },
+    {
+      "id": "faq-006",
+      "question": "What payment methods do you accept?",
+      "answer": "We accept all major credit cards (Visa, Mastercard, American Express, Discover), PayPal, Apple Pay, and Google Pay. For enterprise customers, we also offer invoice billing with net-30 payment terms.",
+      "category": "Billing & Payments",
+      "keywords": ["payment", "credit card", "paypal", "pay", "billing", "methods"]
+    },
+    {
+      "id": "faq-007",
+      "question": "How long does shipping take?",
+      "answer": "Standard shipping typically takes 5-7 business days within the continental US. Expedited shipping (2-3 days) and overnight shipping options are available at checkout. International shipping times vary by destination, typically 10-15 business days.",
+      "category": "Orders & Shipping",
+      "keywords": ["shipping", "delivery", "how long", "time", "days", "fast"]
+    },
+    {
+      "id": "faq-008",
+      "question": "Can I cancel or modify my order?",
+      "answer": "Orders can be cancelled or modified within 1 hour of placement. After that, orders enter our fulfillment process and cannot be changed. Please contact our support team immediately if you need to make changes to a recent order.",
+      "category": "Orders & Shipping",
+      "keywords": ["cancel", "modify", "change", "order", "edit"]
+    },
+    {
+      "id": "faq-009",
+      "question": "Do you have a mobile app?",
+      "answer": "Yes! Our mobile app is available for both iOS and Android devices. You can download it from the App Store or Google Play Store. The app offers all the features of our website plus exclusive mobile-only deals and push notifications for order updates.",
+      "category": "General Information",
+      "keywords": ["mobile", "app", "ios", "android", "download", "phone"]
+    },
+    {
+      "id": "faq-010",
+      "question": "How do I contact customer support?",
+      "answer": "You can reach our customer support team through this chat, by email at support@example.com, or by phone at 1-800-SUPPORT. For complex technical issues, you can also submit a detailed support ticket through your account dashboard.",
+      "category": "General Information",
+      "keywords": ["contact", "support", "help", "email", "phone", "reach"]
+    }
+  ]
+}
