@@ -10,6 +10,11 @@ const chatRequestSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // hacking render LOL
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "OK" });
+  });
+  
   app.post("/api/session", async (req, res) => {
     try {
       const session = await storage.createSession();
