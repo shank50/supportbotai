@@ -2,22 +2,31 @@ import { type Session, type InsertSession, type Message, type InsertMessage, typ
 import { db } from "./db";
 import { sessions, messages, escalations } from "@shared/schema";
 import { eq, desc } from "drizzle-orm";
+import { type ParsedContext } from "./fileParser";
+
+// In-memory storage for session contexts (uploaded files)
+const sessionContexts = new Map<string, ParsedContext>();
 
 export interface IStorage {
   createSession(): Promise<Session>;
   getSession(id: string): Promise<Session | undefined>;
   updateSessionActivity(id: string): Promise<void>;
-  
+
   createMessage(message: InsertMessage): Promise<Message>;
   getSessionMessages(sessionId: string): Promise<Message[]>;
-  
+
   createEscalation(escalation: InsertEscalation): Promise<Escalation>;
   getSessionEscalations(sessionId: string): Promise<Escalation[]>;
-  
+
   // Analytics methods
   getAllSessions(): Promise<Session[]>;
   getAllMessages(): Promise<Message[]>;
   getAllEscalations(): Promise<Escalation[]>;
+
+  // Context methods
+  setSessionContext(sessionId: string, context: ParsedContext): void;
+  getSessionContext(sessionId: string): ParsedContext | undefined;
+  deleteSessionContext(sessionId: string): void;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -75,6 +84,19 @@ export class DatabaseStorage implements IStorage {
 
   async getAllEscalations(): Promise<Escalation[]> {
     return db.select().from(escalations).orderBy(desc(escalations.timestamp));
+  }
+
+  // Context methods - in-memory for session-scoped data
+  setSessionContext(sessionId: string, context: ParsedContext): void {
+    sessionContexts.set(sessionId, context);
+  }
+
+  getSessionContext(sessionId: string): ParsedContext | undefined {
+    return sessionContexts.get(sessionId);
+  }
+
+  deleteSessionContext(sessionId: string): void {
+    sessionContexts.delete(sessionId);
   }
 }
 
