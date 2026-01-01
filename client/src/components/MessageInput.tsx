@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 interface MessageInputProps {
   onSend: (message: string) => void;
@@ -9,17 +8,22 @@ interface MessageInputProps {
   placeholder?: string;
 }
 
-export function MessageInput({ 
-  onSend, 
+export function MessageInput({
+  onSend,
   disabled = false,
-  placeholder = "Type your message here..." 
+  placeholder = "Type your message..."
 }: MessageInputProps) {
   const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSend = () => {
     if (message.trim() && !disabled) {
       onSend(message.trim());
       setMessage("");
+      // Reset textarea height
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
     }
   };
 
@@ -30,15 +34,27 @@ export function MessageInput({
     }
   };
 
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    // Auto-resize textarea
+    const textarea = e.target;
+    textarea.style.height = "auto";
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + "px";
+  };
+
   return (
-    <div className="flex gap-2 items-end" data-testid="container-message-input">
-      <Textarea
+    <div
+      className="premium-input flex items-end gap-3 rounded-2xl p-2 pl-4"
+      data-testid="container-message-input"
+    >
+      <textarea
+        ref={textareaRef}
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={handleInput}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
-        className="resize-none min-h-[44px] max-h-32"
+        className="flex-1 bg-transparent border-none outline-none resize-none text-[15px] placeholder:text-muted-foreground/60 min-h-[24px] max-h-[120px] py-1.5"
         rows={1}
         data-testid="input-message"
       />
@@ -46,6 +62,7 @@ export function MessageInput({
         onClick={handleSend}
         disabled={!message.trim() || disabled}
         size="icon"
+        className="rounded-xl h-9 w-9 gradient-primary hover:opacity-90 transition-opacity disabled:opacity-40"
         data-testid="button-send"
         aria-label="Send message"
       >
