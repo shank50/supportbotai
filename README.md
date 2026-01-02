@@ -1,217 +1,98 @@
 # SupportBotAI
-AI-powered customer support bot with contextual memory, FAQ matching, and automatic escalation handling.
 
-A minimal AI-driven customer support system designed to simulate real-world interactions, handle FAQs, and escalate complex queries intelligently.
+**Next-Gen AI Customer Support Agent** with session-scoped custom knowledge base, intelligent escalation, and a premium "Earth Tones" UI.
+
+Built with **Google Gemini 2.5 Flash**, Node.js, and React.
+
+
+## Key Features
+
+- **Contextual Memory**: Remembers conversation history for fluid interactions.
+- **Custom Knowledge Base**: Upload your own files (**PDF, DOCX, TXT, JSON, MD**) to create a session-specific knowledge base instantly.
+- **Intelligent Escalation**: Detects frustration or complex queries and simulates human hand-off.
+- **Premium UI**: "Earth Tones" dark-mode first design with glassmorphism and smooth animations.
+- **Resilient AI**: Robust retry logic and model fallback strategy (Gemini 2.5 -> 1.5) for reliability.
+- **Secure Parsing**: Native file parsing (no external binaries) with automatic session cleanup.
 
 ## Tech Stack
 
 ### Backend
-- Express.js
-- TypeScript
-- Node.js 18+
-- Drizzle ORM
-- PostgreSQL (NeonDB)
-
-### AI / LLM
-- Google Gemini API (gemini-2.0-flash-exp)
+- **Runtime**: Node.js 18+
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: PostgreSQL (NeonDB) with Drizzle ORM
+- **AI Model**: Google Gemini 2.5 Flash (via `@google/genai`)
+- **File Parsing**: 
+  - `pdf2json` (PDF)
+  - `mammoth` (DOCX)
+  - Native JSON/Text parsing
 
 ### Frontend
-- React 18
-- TanStack Query
-- Wouter
-- Tailwind CSS
-- Build Tool: Vite, tsx
+- **Framework**: React 18
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS, Lucide Icons
+- **State**: TanStack Query
+- **Routing**: Wouter
 
-## Objective
+## Setup & Installation
 
-Simulate customer support interactions using AI for FAQs and escalation scenarios with:
-- Contextual memory for retaining previous messages.
-- Escalation simulation when AI cannot answer.
-- Optional web chat interface.
-
-## Setup
-
-### 1. Clone the repository
+### 1. Clone & Install
 ```bash
 git clone https://github.com/shank50/supportbotai
 cd SupportBotAI
-```
 
-### 2. Install dependencies
-```bash
+# Install dependencies
 npm install
 ```
 
-### 3. Setup FAQ Corpus
-
-Create a JSON file with all the FAQ dataset and customer queries at `server/faqs.json`
-
-### 4. Configure environment variables
-Create a `.env` file:
+### 2. Environment Configuration
+Create a `.env` file in the root directory:
 ```env
-DATABASE_URL=your_neondb_connection_string
-GEMINI_API_KEY=your_gemini_api_key
+DATABASE_URL=postgresql://user:password@endpoint.neon.tech/neondb
+GEMINI_API_KEY=your_google_gemini_api_key
+PORT=5000 
 ```
 
-### 5. Initialize database
+### 3. Database Setup
+Push the schema to your NeonDB instance:
 ```bash
 npm run db:push
 ```
 
-### 6. Start the development server
+### 4. Run the Application
 ```bash
+# Development mode
 npm run dev
+
+# Production build
+npm run build
+npm start
 ```
-Server runs on http://localhost:5000
+Server runs on `http://localhost:5000`.
 
 ## API Endpoints
 
-### POST /api/session — Create a new session
-Creates a new chat session.
+### Session Management
 
-#### Example:
-```bash
-curl -X POST http://localhost:5000/api/session
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/session` | Create a new anonymous session |
+| `GET` | `/api/session/:id` | Get session details & history |
+| `GET` | `/api/session/:id/summary` | Get AI summary of conversation |
 
-**Response:**
-```json
-{
-  "sessionId": "uuid-string"
-}
-```
+### Chat & Context
 
-### POST /api/chat — Send a message and get AI response
-Sends a message from the user and retrieves an AI-generated response.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/chat` | Send message & get response |
+| `POST` | `/api/session/:id/context` | Upload custom context file (Multipart form-data) |
+| `GET` | `/api/session/:id/context` | Get current context metadata |
+| `DELETE`| `/api/session/:id/context` | Remove custom context (Revert to Default FAQs) |
 
-#### Request Body:
-```json
-{
-  "sessionId": "uuid-string",
-  "message": "What are your business hours?"
-}
-```
+## Custom Context Guide
 
-#### Example:
-```bash
-curl -X POST http://localhost:5000/api/chat   -H "Content-Type: application/json"   -d '{"sessionId":"SESSION_ID","message":"What are your business hours?"}'
-```
+The bot accepts dynamic context uploads. When a file is uploaded, the bot switches from the default `faqs.json` to the uploaded document for its knowledge base.
 
-#### Response:
-```json
-{
-  "userMessage": {
-    "id": "uuid",
-    "sessionId": "uuid",
-    "sender": "user",
-    "content": "What are your business hours?",
-    "timestamp": "2024-01-01T00:00:00.000Z",
-    "metadata": null
-  },
-  "botMessage": {
-    "id": "uuid",
-    "sessionId": "uuid",
-    "sender": "bot",
-    "content": "We are open Monday to Friday, 9 AM to 6 PM EST...",
-    "timestamp": "2024-01-01T00:00:00.000Z",
-    "metadata": {
-      "matchedFAQ": {
-        "question": "What are your business hours?",
-        "category": "General"
-      },
-      "suggestedActions": ["contact_support", "view_pricing"]
-    }
-  },
-  "escalation": null,
-  "shouldEscalate": false
-}
-```
-
-#### Escalation Response Example:
-```json
-{
-  "userMessage": { ... },
-  "botMessage": { ... },
-  "escalation": {
-    "id": "uuid",
-    "sessionId": "uuid",
-    "reason": "Complex technical query requiring human expertise",
-    "timestamp": "2024-01-01T00:00:00.000Z",
-    "resolved": false
-  },
-  "shouldEscalate": true
-}
-```
-
-### GET /api/session/:sessionId — Get session details
-Retrieves complete session data, including all messages and escalations.
-
-#### Example:
-```bash
-curl http://localhost:5000/api/session/SESSION_ID
-```
-
-**Response:**
-```json
-{
-  "session": {
-    "id": "uuid",
-    "createdAt": "2024-01-01T00:00:00.000Z",
-    "lastActivityAt": "2024-01-01T00:05:00.000Z"
-  },
-  "messages": [
-    {
-      "id": "uuid",
-      "sessionId": "uuid",
-      "sender": "user",
-      "content": "Hello",
-      "timestamp": "2024-01-01T00:00:00.000Z",
-      "metadata": null
-    },
-    {
-      "id": "uuid",
-      "sessionId": "uuid",
-      "sender": "bot",
-      "content": "Hello! How can I help you today?",
-      "timestamp": "2024-01-01T00:00:01.000Z",
-      "metadata": { }
-    }
-  ],
-  "escalations": []
-}
-```
-
-### GET /api/session/:sessionId/summary — Get conversation summary
-Generates an AI summary of the session conversation.
-
-#### Example:
-```bash
-curl http://localhost:5000/api/session/SESSION_ID/summary
-```
-
-**Response:**
-```json
-{
-  "summary": "Customer inquired about business hours and pricing plans. Provided details about the 9 AM - 6 PM schedule and linked to the pricing page. No escalation required."
-}
-```
-
-## Testing with curl
-
-```bash
-# 1. Create session
-curl -X POST http://localhost:5000/api/session
-
-# 2. Send message (replace SESSION_ID)
-curl -X POST http://localhost:5000/api/chat   -H "Content-Type: application/json"   -d '{"sessionId":"SESSION_ID","message":"What are your business hours?"}'
-
-# 3. Get session details
-curl http://localhost:5000/api/session/SESSION_ID
-
-# 4. Get summary
-curl http://localhost:5000/api/session/SESSION_ID/summary
-```
-
-
-- README documenting setup, endpoints, and sample prompts
-- Demonstration of contextual conversation accuracy
+- **Supported Files**: `.pdf`, `.docx`, `.txt`, `.json`, `.md`
+- **Max Size**: 10MB
+- **Cleanup**: Files are automatically deleted after 30 minutes of inactivity.
